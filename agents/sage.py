@@ -7,7 +7,7 @@ from agno.storage.agent.postgres import PostgresAgentStorage
 from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.vectordb.pgvector import PgVector, SearchType
 
-from db.session import db_url
+from db.settings import db_settings
 
 
 def get_sage(
@@ -16,6 +16,9 @@ def get_sage(
     session_id: Optional[str] = None,
     debug_mode: bool = True,
 ) -> Agent:
+    # Получаем URL для подключения к базе данных
+    db_url = db_settings.get_db_url(for_async=False)
+    
     additional_context = ""
     if user_id:
         additional_context += "<context>"
