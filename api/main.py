@@ -3,6 +3,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from api.routes.v1_router import v1_router
 from api.settings import api_settings
+from db.session import init_db, close_db
 
 
 def create_app() -> FastAPI:
@@ -28,6 +29,17 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    
+    # Регистрация обработчиков событий для базы данных
+    @app.on_event("startup")
+    async def startup_db():
+        """Инициализация базы данных при запуске приложения"""
+        await init_db()
+    
+    @app.on_event("shutdown")
+    async def shutdown_db():
+        """Закрытие соединений с базой данных при остановке приложения"""
+        await close_db()
 
     return app
 
